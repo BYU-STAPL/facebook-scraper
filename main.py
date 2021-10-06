@@ -7,6 +7,7 @@
 from scraper import Scraper
 from frreqscrapeservice import FrReqScrapeService
 from profscrapeservice import ProfScrapeService
+from sheetsbackend import SheetsBackend
 
 # Initialize the scraper with the credentials for the
 # study participant (one-time passwords only!!!)
@@ -15,11 +16,12 @@ from profscrapeservice import ProfScrapeService
 import os
 scraper = Scraper(os.environ['PHONE'], os.environ['FB_PWD'])
 
+# Set the backend 
+scraper.attach_backend(SheetsBackend())
+
 # Attach the scrape services you'll be using.
-scraper.attach(FrReqScrapeService())
-scraper.attach(ProfScrapeService())
+scraper.attach_scraper(FrReqScrapeService())
+scraper.attach_scraper(ProfScrapeService())
 
 # Call scrape to gather all data
 scraper.scrape()
-
-print(scraper.user_dto)
