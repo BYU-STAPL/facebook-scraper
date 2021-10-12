@@ -6,3 +6,5 @@ class UserDTO:
     password: str
     first_name: str
     last_name: str
+    fr_name_list: str
+    fr_photo_list: str

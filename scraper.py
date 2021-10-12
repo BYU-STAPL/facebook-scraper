@@ -5,7 +5,7 @@ class Scraper():
     def __init__(self, phone_number, password):
         self.backend = None
         self.scrape_services = []
-        self.user_dto = UserDTO(phone_number, password, None, None)
+        self.user_dto = UserDTO(phone_number, password, None, None, None, None)
 
     def scrape(self):
         for service in self.scrape_services:
