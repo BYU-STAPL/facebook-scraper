@@ -66,13 +66,3 @@ class FrReqScrapeService(IScrapeService):
         
         # print("All finished fr scrape")
         browser.quit()
-        
-        user_dto.first_name = 'Drew' # delete me, I'm just an example
-
-
-
-
-
-
-
-
