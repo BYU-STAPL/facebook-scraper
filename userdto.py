@@ -4,7 +4,7 @@ from dataclasses import dataclass
 class UserDTO:
     phone_number: str
     password: str
-    first_name: str
-    last_name: str
+    name: str
     fr_name_list: str
     fr_photo_list: str
+    prof_photo_url: str
