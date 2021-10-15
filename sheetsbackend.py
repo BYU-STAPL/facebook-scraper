@@ -1,9 +1,13 @@
 from ibackend import IBackend
+from userprofilesheet import UserProfileSheet
+from frsheet import FRSheet
 
 class SheetsBackend(IBackend):
 
     def store_data(self, user_dto):
-        # We're just printing out the data for now
-        # to prove that we got here
-        print('Sheets Backend received data: ')
-        print(user_dto)
+        self.sheets = [
+            UserProfileSheet(),
+            FRSheet()
+        ]
+        for sheet in self.sheets:
+            sheet.store_data(user_dto)

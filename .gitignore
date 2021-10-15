@@ -51,3 +51,6 @@ docs/_build/
 
 # IDE stuff
 .idea
+
+# Credentials
+keys.json

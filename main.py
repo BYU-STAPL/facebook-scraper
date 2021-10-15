@@ -1,3 +1,5 @@
+from getpass import getpass, getuser
+
 # This file shows an example of how the system can be used.
 # I think this should provide lots of flexibility for 
 # different studies.
@@ -14,9 +16,7 @@ from sheetsbackend import SheetsBackend
 # Here, we read the credentials from env vars so that creds
 # aren't being pushed to the public repo
 
-
-import os
-scraper = Scraper(os.environ['PHONE'], os.environ['FB_PWD'])
+scraper = Scraper(input('Username/Phone: '), getpass())
 
 # Set the backend 
 scraper.attach_backend(SheetsBackend())
