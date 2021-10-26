@@ -4,10 +4,8 @@
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoSuchElementException
 import time
-
-# export PHONE="100061986225169"
-# export FB_PWD="12Password34"
 
 # Import the IScrapeServiceInterface
 from iscrapeservice import IScrapeService
@@ -42,9 +40,18 @@ class FrReqScrapeService(IScrapeService):
         browser.get("https://www.facebook.com/friends")
         time.sleep(3)
         
-        seeMore = browser.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/div[2]/div/div[1]')
-        seeMore.click()
-        time.sleep(3)
+        # Click the seemore button if it exists, thanks Alex Okrushko
+        def check_exists_by_xpath(xpath):
+            try:
+                browser.find_element_by_xpath(xpath)
+            except NoSuchElementException:
+                return False
+            return True
+        
+        if (check_exists_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/div[2]/div/div[1]')): 
+            seeMore = browser.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/div[2]/div/div[1]')
+            seeMore.click()
+            time.sleep(3)
         
         allFriendRequests = browser.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/div[1]/div')
 
@@ -65,4 +72,5 @@ class FrReqScrapeService(IScrapeService):
         user_dto.fr_photo_list = friendRequestPhotos
         
         # print("All finished fr scrape")
+        # print(friendRequestNamesFinal, friendRequestPhotos)
         browser.quit()
