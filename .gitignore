@@ -56,3 +56,6 @@ docs/_build/
 keys.json
 
 .DS_store
+
+# VSCode Workspace
+.vscode
