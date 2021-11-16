@@ -6,6 +6,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 import time
+from selenium.webdriver.common.keys import Keys
+
 
 # Import the IScrapeServiceInterface
 from iscrapeservice import IScrapeService
@@ -15,62 +17,60 @@ from iscrapeservice import IScrapeService
 class FrReqScrapeService(IScrapeService):
 
     # This method is required as part of the interface
-    def scrape(self, user_dto):
-        # The credentials will be passed in with the user_dto.
-        # You can access the credentials like this:
-        username = user_dto.phone_number
-        password = user_dto.password
+    def scrape(self, user_dto, browser):
         
-        # disabling notification popups
-        option = Options()
-        option.add_argument('--disable-notifications')
-        browser = webdriver.Chrome(options=option)
-        browser.get('https://www.facebook.com/')
-
-        phone_input = browser.find_element_by_name('email')
-        password_input = browser.find_element_by_name('pass')
-        login_button = browser.find_element_by_name('login')
-
-        # notice we are using username here but it will be phone number eventually
-        phone_input.send_keys(username)
-        password_input.send_keys(password)
-        login_button.click()
+        browser.get("https://www.facebook.com/friends/requests")
         time.sleep(3)
         
-        browser.get("https://www.facebook.com/friends")
-        time.sleep(3)
-        
-        # Click the seemore button if it exists, thanks Alex Okrushko
-        def check_exists_by_xpath(xpath):
-            try:
-                browser.find_element_by_xpath(xpath)
-            except NoSuchElementException:
-                return False
-            return True
-        
-        if (check_exists_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/div[2]/div/div[1]')): 
-            seeMore = browser.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/div[2]/div/div[1]')
-            seeMore.click()
-            time.sleep(3)
-        
-        allFriendRequests = browser.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/div[1]/div')
+        # frBlock = browser.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[1]')
+        # divs = frBlock.find_elements_by_tag_name('div')
+        # i = 0
+        # for div in divs:
+        #     try:
+        #         div.send_keys(Keys.DOWN)
+        #         print("Worked on div " + str(i))
+        #     except:
+        #         pass
+        #     i = i + 1
 
-        #get the parent div of the 2 spans
-        friendRequestNames = allFriendRequests.find_elements_by_xpath("//div[contains(@class, 'tvmbv18p') and contains(@class, 'aahdfvyu')]")
+        # print("Should have scrolled down, now wait 3 sec")
+        # time.sleep(3)
+        
+        allFriendRequests = browser.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[1]')
+        friendRequestPhotos = allFriendRequests.find_elements_by_tag_name('image')
+        friendRequestPhotosFinal = []
+        for j in range(len(friendRequestPhotos)):
+            if (friendRequestPhotos[j].get_attribute('style') == "height: 60px; width: 60px;"):
+                friendRequestPhotosFinal.append(friendRequestPhotos[j].get_attribute('xlink:href'))
+        
+        # friendRequestPhotos = [a.get_attribute('xlink:href') for a in friendRequestPhotos]
+        # print("Friend Request Photos = ")
+        # print(friendRequestPhotosFinal)
+        # #get the parent div of the 2 spans
 
+        
         friendRequestNamesFinal = []
+        friendRequestNames = allFriendRequests.find_elements_by_xpath("//span[contains(@class, 'lrazzd5p') and contains(@class, 'oo9gr5id')]")
+        friendRequestNames = [name.text for name in friendRequestNames]
+        for i in range(len(friendRequestNames)):
+            # print("Name is = " + friendRequestNames[i])
+            if friendRequestNames[i] == '' or friendRequestNames[i][:1].isdigit():
+                pass
+            else:
+                friendRequestNamesFinal.append(friendRequestNames[i])
 
-        # gets 2nd span's text and append to new array
-        for j in range(len(friendRequestNames)):
-            tempArray = friendRequestNames[j].find_elements_by_tag_name('span')
-            friendRequestNamesFinal.append(tempArray[1].text)
+        # print(friendRequestNamesFinal)
+        
+        
 
-        friendRequestPhotos = allFriendRequests.find_elements_by_tag_name('img')
-        friendRequestPhotos = [a.get_attribute('src') for a in friendRequestPhotos]
+        # # gets 2nd span's text and append to new array
+        # for j in range(len(friendRequestNames)):
+        #     tempArray = friendRequestNames[j].find_elements_by_tag_name('span')
+        #     friendRequestNamesFinal.append(tempArray[1].text)
+
+        # friendRequestPhotos = allFriendRequests.find_elements_by_tag_name('img')
+        # friendRequestPhotos = [a.get_attribute('src') for a in friendRequestPhotos]
 
         user_dto.fr_name_list = friendRequestNamesFinal
-        user_dto.fr_photo_list = friendRequestPhotos
+        user_dto.fr_photo_list = friendRequestPhotosFinal
         
-        # print("All finished fr scrape")
-        # print(friendRequestNamesFinal, friendRequestPhotos)
-        browser.quit()
