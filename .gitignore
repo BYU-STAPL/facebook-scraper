@@ -54,3 +54,8 @@ docs/_build/
 
 # Credentials
 keys.json
+
+.DS_store
+
+# VSCode Workspace
+.vscode
