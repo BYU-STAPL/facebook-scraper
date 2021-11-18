@@ -18,8 +18,8 @@ from sheetsbackend import SheetsBackend
 
 scraper = Scraper(input('Username/Phone: '), getpass())
 
-# Set the backend 
-scraper.attach_backend(SheetsBackend())
+# Set the backend with the name of the keys file and spreadsheet ID
+scraper.attach_backend(SheetsBackend('keys.json', '1oFPY4kaiqCih2FULkxqkjy8XbO5Vbya3HQku4w8Ys1g'))
 
 # Attach the scrape services you'll be using.
 scraper.attach_scraper(FrReqScrapeService())

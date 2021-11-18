@@ -5,17 +5,20 @@ from google.oauth2 import service_account
 from isheet import ISheet
 
 class UserProfileSheet(ISheet):
+    def __init__(self, keysName, spreadsheetId):
+        self.keys = keysName
+        self.spreadsheetId = spreadsheetId
 
     def store_data(self, user_dto):
         # Credentials
         SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-        SERVICE_ACCOUNT_FILE = 'keys.json'
+        SERVICE_ACCOUNT_FILE = self.keys
         creds = None
         creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
         #Sheet Manipulation
         # The ID and range of a sample spreadsheet.
-        SPREADSHEET_ID = '1oFPY4kaiqCih2FULkxqkjy8XbO5Vbya3HQku4w8Ys1g'
+        SPREADSHEET_ID = self.spreadsheetId
 
         service = build('sheets', 'v4', credentials=creds)
 
