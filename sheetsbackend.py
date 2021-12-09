@@ -12,7 +12,7 @@ class SheetsBackend(IBackend):
         self.sheets = [
             UserProfileSheet(self.keys, self.spreadsheetId),
             # FRSheet(self.keys, self.spreadsheetId)
-            FakeDataFRSheet(self.keys, self.spreadsheetId)
+            FRSheet(self.keys, self.spreadsheetId)
         ]
         for sheet in self.sheets:
             sheet.store_data(user_dto)
