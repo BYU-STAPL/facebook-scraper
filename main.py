@@ -19,8 +19,20 @@ from sheetsbackend import SheetsBackend
 scraper = Scraper(input('Username/Phone: '), getpass())
 
 # Set the backend with the name of the keys file and spreadsheet ID
-scraper.attach_backend(SheetsBackend('keys.json', '1zzN2waDf5FZJxwd1k8TYdKr_KSyCgps3ZnjoJApFOG4'))
+def createGoogleSheetsBackend():
+    keyName = 'keys.json'
+    spreadsheetID = '1zzN2waDf5FZJxwd1k8TYdKr_KSyCgps3ZnjoJApFOG4'
+    backend = SheetsBackend(keyName, spreadsheetID)
+    # attach the sheets to this backend
+    from userprofilesheet import UserProfileSheet
+    from frsheet import FRSheet
+    from fakeDataFRSheet import FakeDataFRSheet
+    backend.add_sheet(UserProfileSheet(keyName, spreadsheetID))
+    backend.add_sheet(FRSheet(keyName, spreadsheetID))
+    return backend
 
+# attach the backend to the scraper
+scraper.attach_backend(createGoogleSheetsBackend())
 # Attach the scrape services you'll be using.
 scraper.attach_scraper(FrReqScrapeService())
 scraper.attach_scraper(ProfScrapeService())
