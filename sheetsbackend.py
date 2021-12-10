@@ -4,15 +4,13 @@ from frsheet import FRSheet
 from fakeDataFRSheet import FakeDataFRSheet
 
 class SheetsBackend(IBackend):
-    def __init__(self, keysName, spreadsheetId):
+    def __init__(self, keysName, spreadsheetId, sheets=[]):
         self.keys = keysName
         self.spreadsheetId = spreadsheetId
+        self.sheets = sheets
     
     def store_data(self, user_dto):
-        self.sheets = [
-            UserProfileSheet(self.keys, self.spreadsheetId),
-            # FRSheet(self.keys, self.spreadsheetId)
-            FakeDataFRSheet(self.keys, self.spreadsheetId)
-        ]
         for sheet in self.sheets:
             sheet.store_data(user_dto)
+    def add_sheet(self, sheet):
+        self.sheets.append(sheet)
