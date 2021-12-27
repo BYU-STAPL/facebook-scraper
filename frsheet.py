@@ -1,7 +1,7 @@
 from __future__ import print_function
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
-from isheet import ISheet
+from .isheet import ISheet
 
 class FRSheet(ISheet):
     def __init__(self, keysName, spreadsheetId):

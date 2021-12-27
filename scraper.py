@@ -1,4 +1,4 @@
-from userdto import UserDTO
+from .userdto import UserDTO
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
@@ -14,12 +14,15 @@ class Scraper():
         username = self.user_dto.phone_number
         password = self.user_dto.password
         
-        # disabling notification popups
+        # DISABLE NOTIFICATION POPUPS
         option = Options()
         option.add_argument('--disable-notifications')
+
+        # OPEN FACEBOOK
         browser = webdriver.Chrome(options=option)
         browser.get('https://www.facebook.com/')
         
+        # LOG USER IN
         phone_input = browser.find_element_by_name('email')
         password_input = browser.find_element_by_name('pass')
         login_button = browser.find_element_by_name('login')
@@ -28,11 +31,13 @@ class Scraper():
         phone_input.send_keys(username)
         password_input.send_keys(password)
         login_button.click()
-        time.sleep(3)
-        
+        time.sleep(3) #TODO: see if you can elminate this sleep(3) thing.
+
+        # SCRAPE ALL SERVICES
         for service in self.scrape_services:
             service.scrape(self.user_dto, browser)
         
+        # STORE DATA IN THE BACKEND
         self.backend.store_data(self.user_dto)
         browser.quit()
 

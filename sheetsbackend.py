@@ -1,7 +1,6 @@
-from ibackend import IBackend
-from userprofilesheet import UserProfileSheet
-from frsheet import FRSheet
-from fakeDataFRSheet import FakeDataFRSheet
+from .ibackend import IBackend
+#from .userprofilesheet import UserProfileSheet
+#from .frsheet import FRSheet
 
 class SheetsBackend(IBackend):
     def __init__(self, keysName, spreadsheetId, sheets=[]):
