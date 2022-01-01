@@ -1,3 +1,4 @@
+import logging
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
@@ -29,60 +30,36 @@ class FriendScrapeService(IScrapeService):
         friendNamesAfterScrolling = []
         totalNumberOfFriends = None
         try:
-            friendCountElement = browser.find_element_by_xpath("/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div/div[3]/div/div/div[2]/span/a")
+            friendCountElement = browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div/div[3]/div/div/div[2]/span/a")
             totalNumberOfFriends = int(friendCountElement.text.replace(" Friends", ""))
         except:
             print("Your thing broke.")
         print("Your total number of friends is: " + str(totalNumberOfFriends))
-        while len(friendNamesAfterScrolling) < totalNumberOfFriends: # Let's just experiment, maybe there's 10 wonky friends that don't show up
-            time.sleep(3) # By experimentation, I've found that this is a nice way to do it.
+
+        friendElements = []
+        # Main scrolling loop
+        #while len(friendElements) + 1 < totalNumberOfFriends: # The reason we are doing friendElements - 1 is because the last friend element is a div that shows "Loading" until everything is loaded
+        while (len(friendElements)) < 30:
+            time.sleep(3) # By experimentation, I've found that this is a nice way to do it; Facebook doesn't freeze up from spamming the scroll bar
             browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            friendNamesAfterScrolling = browser.find_elements_by_xpath("//div[@class='buofh1pr hv4rvrfc']/div[1]/a/span")
-            print(len(friendNamesAfterScrolling))
+            friendParentDiv = browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div/div/div[4]/div/div/div/div/div/div/div/div/div[3]")
+            friendElements = friendParentDiv.find_elements(By.XPATH, "*")
+            logging.debug("Number of friends scraped: " + str(len(friendElements) - 1))
+            #friendNamesAfterScrolling = browser.find_elements_by_xpath("//div[@class='buofh1pr hv4rvrfc']/div[1]/a/span")
+            #print(len(friendNamesAfterScrolling))
 
-        friendNamesToPrint = []
-        for friend in friendNamesAfterScrolling:
-            friendNamesToPrint.append(friend.text)
-        print(friendNamesToPrint)
-        print(len(friendNamesToPrint))
-        endTime = time.time()
-        print("The total time for the friendsscraperservice to run is")
-        print(endTime - startTime)
-'''
-        friendRequestPhotos = allFriends.find_elements_by_tag_name('image')
-        friendRequestPhotosFinal = []
-        for j in range(len(friendRequestPhotos)):
-            if (friendRequestPhotos[j].get_attribute('style') == "height: 60px; width: 60px;"):
-                friendRequestPhotosFinal.append(friendRequestPhotos[j].get_attribute('xlink:href'))
-        
-        # friendRequestPhotos = [a.get_attribute('xlink:href') for a in friendRequestPhotos]
-        # print("Friend Request Photos = ")
-        # print(friendRequestPhotosFinal)
-        # #get the parent div of the 2 spans
-
-        
-        friendRequestNamesFinal = []
-        friendRequestNames = allFriendRequests.find_elements_by_xpath("//span[contains(@class, 'lrazzd5p') and contains(@class, 'oo9gr5id')]")
-        friendRequestNames = [name.text for name in friendRequestNames]
-        for i in range(len(friendRequestNames)):
-            # print("Name is = " + friendRequestNames[i])
-            if friendRequestNames[i] == '' or friendRequestNames[i][:1].isdigit():
+        friends = [] # This will be a list that holds the friend name and a link to the friend image.
+        for friendElement in friendElements:
+            try:
+                friends.append(
+                    {
+                        "imageSource" : friendElement.find_element(By.TAG_NAME, "img").get_attribute("src"),
+                        "name": friendElement.find_element(By.XPATH, ".//div[2]/div[1]/a/span").text,
+                    }
+                )
+            except: # This is the last div, where there is no image tag.
                 pass
-            else:
-                friendRequestNamesFinal.append(friendRequestNames[i])
-
-        # print(friendRequestNamesFinal)
-        
-        
-
-        # # gets 2nd span's text and append to new array
-        # for j in range(len(friendRequestNames)):
-        #     tempArray = friendRequestNames[j].find_elements_by_tag_name('span')
-        #     friendRequestNamesFinal.append(tempArray[1].text)
-
-        # friendRequestPhotos = allFriendRequests.find_elements_by_tag_name('img')
-        # friendRequestPhotos = [a.get_attribute('src') for a in friendRequestPhotos]
-
-        user_dto.fr_name_list = friendRequestNamesFinal
-        user_dto.fr_photo_list = friendRequestPhotosFinal
-        '''
+        endTime = time.time()
+        logging.info("The total time for the friendsscraperservice to run is")
+        logging.info(str(endTime - startTime))
+        user_dto.add_data("friends", friends)

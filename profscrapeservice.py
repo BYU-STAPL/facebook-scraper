@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.options import Options
 import time
 from selenium.common.exceptions import NoSuchElementException
 
-from iscrapeservice import IScrapeService
+from .iscrapeservice import IScrapeService
 
 class ProfScrapeService(IScrapeService):
 
@@ -33,11 +33,9 @@ class ProfScrapeService(IScrapeService):
         profPicHead = xpathWrapper(profPicXpaths)
         profPic = profPicHead.find_element_by_tag_name('image')
 
-        user_dto.name = profName.text
-        user_dto.prof_photo_url = profPic.get_attribute('xlink:href')
-
-
-
-        
-
-
+        # user_dto.add_data("profile_name", profName.text)
+        # user_dto.add_data("profile_image_source", profPic.get_attribute('xlink:href'))
+        user_dto.add_data("user", {
+            "name": profName.text,
+            "imageSource": profPic.get_attribute('xlink:href')
+        })

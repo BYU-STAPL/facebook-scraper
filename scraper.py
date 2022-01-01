@@ -8,11 +8,13 @@ class Scraper():
     def __init__(self, phone_number, password):
         self.backend = None
         self.scrape_services = []
-        self.user_dto = UserDTO(phone_number, password, None, None, None, None)
+        self.user_dto = UserDTO({})
+        self.user_dto.user_data["password"] = password
+        self.user_dto.user_data["phone_number"] = phone_number
 
     def scrape(self):
-        username = self.user_dto.phone_number
-        password = self.user_dto.password
+        username = self.user_dto.user_data["phone_number"]
+        password = self.user_dto.user_data["password"]
         
         # DISABLE NOTIFICATION POPUPS
         option = Options()

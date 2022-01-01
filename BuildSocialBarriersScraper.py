@@ -8,34 +8,25 @@ from .scraper import Scraper
 #from .frreqscrapeservice import FrReqScrapeService
 #from .profscrapeservice import ProfScrapeService
 from .friendsscrapeservice import FriendScrapeService
-from .sheetsbackend import SheetsBackend
+from .profscrapeservice import ProfScrapeService
+from .past_events_scrape_service import PastEventsScrapeService
+from .cache_backend import CacheBackend
 
 # Initialize the scraper with the credentials for the
 # study participant (one-time passwords only!!!)
 # Here, we read the credentials from env vars so that creds
 # aren't being pushed to the public repo
 
-# Set the backend with the name of the keys file and spreadsheet ID
-def createGoogleSheetsBackend():
-    keyName = 'keys.json'
-    spreadsheetID = '1zzN2waDf5FZJxwd1k8TYdKr_KSyCgps3ZnjoJApFOG4'
-    backend = SheetsBackend(keyName, spreadsheetID)
-    # attach the sheets to this backend
-    from .userprofilesheet import UserProfileSheet
-    from .frsheet import FRSheet
-    backend.add_sheet(UserProfileSheet(keyName, spreadsheetID))
-    backend.add_sheet(FRSheet(keyName, spreadsheetID))
-    return backend
-
 def buildAndRunScraper(username, password):
     scraper = Scraper(username, password)
     # attach the backend to the scraper
-    scraper.attach_backend(createGoogleSheetsBackend())
-    # Attach the scrape services you'll be using.
+    scraper.attach_backend(CacheBackend())
 
-    # scraper.attach_scraper(FrReqScrapeService())
-    # scraper.attach_scraper(ProfScrapeService())
     scraper.attach_scraper(FriendScrapeService())
+    scraper.attach_scraper(ProfScrapeService())
+    scraper.attach_scraper(PastEventsScrapeService())
 
-    # Call scrape to gather all data
     scraper.scrape()
+
+    del scraper.user_dto.user_data["password"] # strip user's password before sending it back
+    return scraper.user_dto.user_data
