@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 
 from .iscrapeservice import IScrapeService
 
@@ -11,6 +12,15 @@ class ProfScrapeService(IScrapeService):
         browser.get("https://www.facebook.com/profile")
 
         time.sleep(5)
+
+        totalNumberOfFriends = None
+        try:
+            friendCountElement = browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div/div[3]/div/div/div[2]/span/a")
+            totalNumberOfFriends = int(friendCountElement.text.replace(" Friends", ""))
+        except:
+            print("Your thing broke.")
+        print("Your total number of friends is: " + str(totalNumberOfFriends))
+
         
         def xpathWrapper(xpaths):
             for xpath in xpaths:
@@ -37,5 +47,6 @@ class ProfScrapeService(IScrapeService):
         # user_dto.add_data("profile_image_source", profPic.get_attribute('xlink:href'))
         user_dto.add_data("user", {
             "name": profName.text,
-            "imageSource": profPic.get_attribute('xlink:href')
+            "imageSource": profPic.get_attribute('xlink:href'),
+            "total_number_of_friends": totalNumberOfFriends
         })

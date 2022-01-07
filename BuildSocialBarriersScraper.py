@@ -10,6 +10,7 @@ from .scraper import Scraper
 from .friendsscrapeservice import FriendScrapeService
 from .profscrapeservice import ProfScrapeService
 from .past_events_scrape_service import PastEventsScrapeService
+from .event_friends_scrape_service import EventFriendsScrapeService
 from .cache_backend import CacheBackend
 
 # Initialize the scraper with the credentials for the
@@ -22,9 +23,9 @@ def buildAndRunScraper(username, password):
     # attach the backend to the scraper
     scraper.attach_backend(CacheBackend())
 
-    scraper.attach_scraper(FriendScrapeService())
     scraper.attach_scraper(ProfScrapeService())
-    scraper.attach_scraper(PastEventsScrapeService())
+    scraper.attach_scraper(EventFriendsScrapeService())
+
 
     scraper.scrape()
 
