@@ -19,6 +19,10 @@ class Scraper():
         # DISABLE NOTIFICATION POPUPS
         option = Options()
         option.add_argument('--disable-notifications')
+        option.add_argument("--window-size=1920,1080")
+        option.add_argument("--start-maximized")
+        option.add_argument("--headless")
+
 
         # OPEN FACEBOOK
         browser = webdriver.Chrome(options=option)

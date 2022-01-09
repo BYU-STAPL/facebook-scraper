@@ -20,6 +20,18 @@ from .iscrapeservice import IScrapeService
 
 class EventFriendsScrapeService(IScrapeService):
     def scrape(self, user_dto, browser):
+        MAXIMUM_WAIT_TIME = 12 # maximum time to wait for necessary elements to appear, in seconds
+        browser.implicitly_wait(MAXIMUM_WAIT_TIME)
+        browser.get("https://www.facebook.com/events")
+
+        def clickParentUntilNoError(element): # If clicking on the item directly doesn't work, try clicking on its parent until it works!
+            try:
+                element.click()
+            except:
+                clickParentUntilNoError(element.find_element(By.XPATH, "./.."))
+        
+        def clickBySpanText(text):
+            clickParentUntilNoError(browser.find_element(By.XPATH, "//span[text()='" + text + "']"))
         # For testing purposes only
         totalNumberOfFriends = 786
 
@@ -81,29 +93,6 @@ class EventFriendsScrapeService(IScrapeService):
             pushButtonsToFinish()
             logging.debug("Exiting createEvent")
 
-        MAXIMUM_WAIT_TIME = 10 # maximum time to wait for necessary elements to appear, in seconds
-        browser.implicitly_wait(MAXIMUM_WAIT_TIME)
-        browser.get("https://www.facebook.com/events")
-
-        createEvent()
-        
-
-        # CLICK INVITE BUTTON
-
-        # Wait until the event is created. It will be created when the span described below appears.
-        WebDriverWait(browser, MAXIMUM_WAIT_TIME).until(EC.presence_of_element_located((By.XPATH, "//span[text()='Add a Few Final Details']")))
-
-        inviteButton = browser.find_element(By.CSS_SELECTOR, "[aria-label='Invite']")
-        inviteButton.click()
-
-        # Wait for popup to appear
-        WebDriverWait(browser, MAXIMUM_WAIT_TIME).until(EC.presence_of_element_located((By.XPATH, "//span[text()='Select all']")))
-
-        # sideBar = browser.find_element(By.XPATH, "//div[@class='j83agx80 cbu4d94t buofh1pr l9j0dhe7']")
-        sideBar = browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div[2]/div/div/div/div[3]/div[1]/div[1]/div[2]/div[1]/div/div")
-        sideBarChildren = sideBar.find_elements(By.XPATH, ".//*")
-        logging.info(len(sideBarChildren))
-        print("We found the sidebar!")
 
         
         def getFriends(friendGroupType, friendContainer):
@@ -149,75 +138,106 @@ class EventFriendsScrapeService(IScrapeService):
                 })
             return friends
         
+        def openPopup():
+            # CLICK INVITE BUTTON
+            # Wait until the event is created. It will be created when the span described below appears.
+            WebDriverWait(browser, MAXIMUM_WAIT_TIME).until(EC.presence_of_element_located((By.XPATH, "//span[text()='Add a Few Final Details']")))
+
+            inviteButton = browser.find_element(By.CSS_SELECTOR, "[aria-label='Invite']")
+            inviteButton.click()
+
+            # Wait for popup to appear
+            WebDriverWait(browser, MAXIMUM_WAIT_TIME).until(EC.presence_of_element_located((By.XPATH, "//span[text()='Select all']")))
+
+        def scrapeFriends():
+            # sideBar = browser.find_element(By.XPATH, "//div[@class='j83agx80 cbu4d94t buofh1pr l9j0dhe7']")
+            sideBar = browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div[2]/div/div/div/div[3]/div[1]/div[1]/div[2]/div[1]/div/div")
+            sideBarChildren = sideBar.find_elements(By.XPATH, ".//*")
+            logging.info(len(sideBarChildren))
+            print("We found the sidebar!")
+            currentElementText = ""
+            friendGroupType = "" # Suggested is the first friend group type
+            friendsByGroup = []
+            friendsByEvent = []
+            suggestedFriends = []
+            allFriends = []
+            for child in sideBarChildren:
+                # Continue looping through the children until the children's text is differnet
+                # logging.debug("Currently scraping " + currentElementText)
+                print("Currently scraping " + currentElementText)
+                if child.text == "More...": # No need to click on the more button, that just gives us more stuff to scrape.
+                    logging.info("Don't click the More... button")
+                    continue
+                if child.text == currentElementText:
+                    logging.info("Not scraping duplicate element, " + currentElementText)
+                    continue
+                else:
+                    currentElementText = child.text
+                    try: # The more button causes an exception on click, so wrap in try except block
+                        child.click()
+                        time.sleep(1) # Wait one second for everything to update. TODO: update this with something intelligent if you can think of it.
+                    except:
+                        continue
+                    # Get the container surrounding the friends
+                    #friendContainer = browser.find_element(By.XPATH, "//div[@class='j83agx80 cbu4d94t buofh1pr l9j0dhe7']")
+                    friendContainer = browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div[2]/div/div/div/div[3]/div[1]/div[1]/div[2]/div[2]/div/div/div")
+
+                    if currentElementText == "Suggested":
+                        friendGroupType = "suggested"
+                    elif currentElementText == "All Friends":
+                        friendGroupType = "all"
+                    elif currentElementText == "EVENTS I ATTENDED":
+                        friendGroupType = "events"
+                        continue # Continue because this text represents a header, not a button
+                    elif currentElementText == "MY GROUPS":
+                        friendGroupType = "groups"
+                        continue
+                    
+                    friends = getFriends(friendGroupType, friendContainer)
+                    if friendGroupType == "events":
+                        friendsByEvent.append(
+                            {
+                                "eventName": currentElementText,
+                                "friends": friends
+                            }
+                        )
+                    elif friendGroupType == "groups":
+                        friendsByGroup.append(
+                            {
+                                "groupName": currentElementText,
+                                "friends": friends
+                            }
+                        )
+                    elif friendGroupType == "all":
+                        allFriends = friends
+                    elif friendGroupType == "suggested":
+                        suggestedFriends = friends
+                    else:
+                        print(friendGroupType + " is not in the approved list!")
+            user_dto.add_data("friendsByEvent", friendsByEvent)
+            user_dto.add_data("friendsByGroup", friendsByGroup)
+            user_dto.add_data("friends", allFriends)
+            user_dto.add_data("suggestedFriends", suggestedFriends)
+
         def closePopup():
             # Find the x button and click it
-            browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div[2]/div/div/div/div[2]/div/div").click()
+            logging.debug("Attempting to close popup")
+            clickParentUntilNoError(browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div[2]/div/div/div/div[2]/div/div"))
             
         def deleteEvent():
             # Find the three dots option menu
-            browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[1]/div[3]/div/div/div/div[2]/div/div[3]/div").click()
-            browser.find_element(By.XPATH, "//span[text()='Cancel Event']").click()
-            browser.find_element(By.XPATH, "//span[text()='Delete Event']").click()
-            browser.find_element(By.XPATH, "//span[text()='Confirm']").click()
-
-        currentElementText = ""
-        friendGroupType = "" # Suggested is the first friend group type
-        friendsByGroup = []
-        friendsByEvent = []
-        allFriends = []
-        for child in sideBarChildren:
-            # Continue looping through the children until the children's text is differnet
-            # logging.debug("Currently scraping " + currentElementText)
-            print("Currently scraping " + currentElementText)
-            if child.text == "More...": # No need to click on the more button, that just gives us more stuff to scrape.
-                logging.info("Don't click the More... button")
-                continue
-            if child.text == currentElementText:
-                logging.info("Not scraping duplicate element, " + currentElementText)
-                continue
-            else:
-                currentElementText = child.text
-                try: # The more button causes an exception on click, so wrap in try except block
-                    child.click()
-                    time.sleep(1) # Wait one second for everything to update. TODO: update this with something intelligent if you can think of it.
-                except:
-                    continue
-                # Get the container surrounding the friends
-                #friendContainer = browser.find_element(By.XPATH, "//div[@class='j83agx80 cbu4d94t buofh1pr l9j0dhe7']")
-                friendContainer = browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div[2]/div/div/div/div[3]/div[1]/div[1]/div[2]/div[2]/div/div/div")
-
-                if currentElementText == "All Friends":
-                    friendGroupType = "all"
-                elif currentElementText == "EVENTS I ATTENDED":
-                    friendGroupType = "events"
-                    continue # Continue because this text represents a header, not a button
-                elif currentElementText == "MY GROUPS":
-                    friendGroupType = "groups"
-                    continue
-                
-                friends = getFriends(friendGroupType, friendContainer)
-                if friendGroupType == "events":
-                    friendsByEvent.append(
-                        {
-                            "eventName": currentElementText,
-                            "friends": friends
-                        }
-                    )
-                elif friendGroupType == "groups":
-                    friendsByGroup.append(
-                        {
-                            "groupName": currentElementText,
-                            "friends": friends
-                        }
-                    )
-                elif friendGroupType == "all":
-                    allFriends = friends
-                else:
-                    print(friendGroupType + " is not in the approved list!")
-        user_dto.add_data("friendsByEvent", friendsByEvent)
-        user_dto.add_data("friendsByGroup", friendsByGroup)
-        user_dto.add_data("friends", allFriends)
-
+            logging.debug("Attempting to delete event")
+            clickParentUntilNoError(browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[1]/div[3]/div/div/div/div[2]/div/div[3]/div/div"))
+            clickBySpanText("Cancel Event")
+            clickBySpanText("Delete Event")
+            #clickBySpanText("Confirm")
+            # Sadly, it seems there are multiple spans with 'Confirm', so we click the Confirm button by xpath:
+            clickParentUntilNoError(browser.find_element(By.XPATH, "/html/body/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div[2]/div/div/div/div[4]/div/div[1]/div[1]/div/div[1]/div/span/span"))
+        
+        createEvent()
+        openPopup()
+        scrapeFriends()
         closePopup()
         deleteEvent()
-        time.sleep(10)
+
+        time.sleep(3) # Just let it sleep for a little while so you can see what's on screen before it closes.
