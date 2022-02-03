@@ -21,7 +21,7 @@ scraper = Scraper(input('Username/Phone: '), getpass())
 # Set the backend with the name of the keys file and spreadsheet ID
 def createGoogleSheetsBackend():
     keyName = 'keys.json'
-    spreadsheetID = '1zzN2waDf5FZJxwd1k8TYdKr_KSyCgps3ZnjoJApFOG4'
+    spreadsheetID = '1GtLupC4bNrhngFSY3ToihvZxmMTwobMl6GF-9KwjjRY'
     backend = SheetsBackend(keyName, spreadsheetID)
     # attach the sheets to this backend
     from userprofilesheet import UserProfileSheet
