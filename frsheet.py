@@ -9,30 +9,33 @@ class FRSheet(ISheet):
         self.spreadsheetId = spreadsheetId
 
     def store_data(self, user_dto):
-        # Credentials
-        SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-        SERVICE_ACCOUNT_FILE = self.keys
-        creds = None
-        creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        if hasattr(user_dto, 'fr_name_list'):
 
-        #Sheet Manipulation
-        SPREADSHEET_ID = self.spreadsheetId
+            # Credentials
+            SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+            SERVICE_ACCOUNT_FILE = self.keys
+            creds = None
+            creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
-        service = build('sheets', 'v4', credentials=creds)
+            #Sheet Manipulation
+            SPREADSHEET_ID = self.spreadsheetId
 
-        column_names = [('Name', 'ProfilePhoto')]
-        data = list(zip(user_dto.fr_name_list, user_dto.fr_photo_list))
+            service = build('sheets', 'v4', credentials=creds)
 
-        values = column_names + data
+            column_names = [('Name', 'ProfilePhoto')]
 
-        body = {
-            'values': values
-        }
+            data = list(zip(user_dto.fr_name_list, user_dto.fr_photo_list))
 
-        result = service.spreadsheets().values().update(
-            spreadsheetId=SPREADSHEET_ID,
-            range="FriendRequests!A1:B100",
-            valueInputOption = "USER_ENTERED",
-            body=body).execute()
-        print('{0} cells updated.'.format(result.get('updatedCells')))
+            values = column_names + data
+
+            body = {
+                'values': values
+            }
+
+            result = service.spreadsheets().values().update(
+                spreadsheetId=SPREADSHEET_ID,
+                range="FriendRequests!A1:B100",
+                valueInputOption = "USER_ENTERED",
+                body=body).execute()
+            print('{0} cells updated.'.format(result.get('updatedCells')))
 
