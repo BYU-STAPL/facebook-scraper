@@ -20,10 +20,10 @@ class ProfScrapeService(IScrapeService):
                     continue
                 return browser.find_element_by_xpath(xpath)
             
-            
-        profNameXpaths = ['/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div[2]/div/div/div/div[1]/div/div/span/h1', 
-                          '/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div/div[3]/div/div/div[1]/div/div/span/h1']
+        
+        profNameXpaths = ['/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div/div[3]/div/div/div[1]/div/div/span/div/h1']
         profName = xpathWrapper(profNameXpaths)
+    
         
         #For some reason can't get direct svg xpaths, so have to go to parents, note, order of these xpaths 
         # matter since they both exist in the different web pages
