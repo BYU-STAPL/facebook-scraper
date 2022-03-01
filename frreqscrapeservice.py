@@ -8,6 +8,7 @@ from selenium.common.exceptions import NoSuchElementException
 import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+# importing By includes the newest selenium grammar for parsing web elements
 
 
 # Import the IScrapeServiceInterface
