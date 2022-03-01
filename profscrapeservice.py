@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 
 from iscrapeservice import IScrapeService
 
@@ -15,10 +16,10 @@ class ProfScrapeService(IScrapeService):
         def xpathWrapper(xpaths):
             for xpath in xpaths:
                 try:
-                    browser.find_element_by_xpath(xpath)
+                    browser.find_element(By.XPATH, xpath)
                 except NoSuchElementException:
                     continue
-                return browser.find_element_by_xpath(xpath)
+                return browser.find_element(By.XPATH, xpath)
             
         
         profNameXpaths = ['/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div/div[3]/div/div/div[1]/div/div/span/div/h1']
@@ -31,7 +32,7 @@ class ProfScrapeService(IScrapeService):
             '/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div[1]/div/div/div/div', 
             '/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div[1]/div/div/div/div/div']
         profPicHead = xpathWrapper(profPicXpaths)
-        profPic = profPicHead.find_element_by_tag_name('image')
+        profPic = profPicHead.find_element(By.TAG_NAME, 'image')
 
         user_dto.name = profName.text
         user_dto.prof_photo_url = profPic.get_attribute('xlink:href')

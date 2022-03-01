@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 import time
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 
 
 # Import the IScrapeServiceInterface
@@ -36,8 +37,8 @@ class FrReqScrapeService(IScrapeService):
         # print("Should have scrolled down, now wait 3 sec")
         # time.sleep(3)
         
-        allFriendRequests = browser.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[1]')
-        friendRequestPhotos = allFriendRequests.find_elements_by_tag_name('image')
+        allFriendRequests = browser.find_element(By.XPATH, '/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[1]')
+        friendRequestPhotos = allFriendRequests.find_elements(By.TAG_NAME, 'image')
         friendRequestPhotosFinal = []
         for j in range(len(friendRequestPhotos)):
             if (friendRequestPhotos[j].get_attribute('style') == "height: 60px; width: 60px;"):
@@ -50,7 +51,7 @@ class FrReqScrapeService(IScrapeService):
 
         
         friendRequestNamesFinal = []
-        friendRequestNames = allFriendRequests.find_elements_by_xpath("//span[contains(@class, 'lrazzd5p') and contains(@class, 'oo9gr5id')]")
+        friendRequestNames = allFriendRequests.find_elements(By.XPATH, "//span[contains(@class, 'lrazzd5p') and contains(@class, 'oo9gr5id')]")
         friendRequestNames = [name.text for name in friendRequestNames]
         for i in range(len(friendRequestNames)):
             # print("Name is = " + friendRequestNames[i])
