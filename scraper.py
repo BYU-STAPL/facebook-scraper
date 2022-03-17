@@ -1,6 +1,7 @@
 from userdto import UserDTO
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 class Scraper():
@@ -17,9 +18,9 @@ class Scraper():
         # disabling notification popups
         option = Options()
         option.add_argument('--disable-notifications')
-        browser = webdriver.Chrome(options=option)
+        browser = webdriver.Chrome(ChromeDriverManager().install())
         browser.get('https://www.facebook.com/')
-        
+         
         phone_input = browser.find_element_by_name('email')
         password_input = browser.find_element_by_name('pass')
         login_button = browser.find_element_by_name('login')
