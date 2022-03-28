@@ -29,7 +29,9 @@ class Scraper():
         phone_input.send_keys(username)
         password_input.send_keys(password)
         login_button.click()
-        time.sleep(3)
+
+        # wait 3 seconds if needed
+        browser.implicitly_wait(3)
         
         for service in self.scrape_services:
             service.scrape(self.user_dto, browser)
