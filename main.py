@@ -1,4 +1,5 @@
 from getpass import getpass, getuser
+import sys
 
 # This file shows an example of how the system can be used.
 # I think this should provide lots of flexibility for 
@@ -16,7 +17,11 @@ from sheetsbackend import SheetsBackend
 # Here, we read the credentials from env vars so that creds
 # aren't being pushed to the public repo
 
-scraper = Scraper(input('Username/Phone: '), getpass())
+username = sys.argv[1]
+password = sys.argv[2]
+
+scraper = Scraper(username, password)
+# scraper = Scraper(input('Username/Phone: '), getpass())
 
 # Set the backend with the name of the keys file and spreadsheet ID
 def createGoogleSheetsBackend():

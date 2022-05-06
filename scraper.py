@@ -17,8 +17,11 @@ class Scraper():
         
         # disabling notification popups
         option = Options()
+        option.headless = True
+        assert option.headless == True
         option.add_argument('--disable-notifications')
-        browser = webdriver.Chrome(ChromeDriverManager().install())
+        browser = webdriver.Chrome(ChromeDriverManager().install(), options=option)
+
         browser.get('https://www.facebook.com/')
          
         phone_input = browser.find_element_by_name('email')
