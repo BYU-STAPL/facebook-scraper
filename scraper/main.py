@@ -25,7 +25,7 @@ scraper = Scraper(username, password)
 
 # Set the backend with the name of the keys file and spreadsheet ID
 def createGoogleSheetsBackend():
-    keyName = 'keys.json'
+    keyName = 'scraper/keys.json'
     spreadsheetID = '1GtLupC4bNrhngFSY3ToihvZxmMTwobMl6GF-9KwjjRY'
     backend = SheetsBackend(keyName, spreadsheetID)
     # attach the sheets to this backend
