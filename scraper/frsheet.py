@@ -4,8 +4,8 @@ from google.oauth2 import service_account
 from isheet import ISheet
 
 class FRSheet(ISheet):
-    def __init__(self, keysName, spreadsheetId):
-        self.keys = keysName
+    def __init__(self, account_info, spreadsheetId):
+        self.account_info = account_info
         self.spreadsheetId = spreadsheetId
 
     def store_data(self, user_dto):
@@ -13,9 +13,9 @@ class FRSheet(ISheet):
 
             # Credentials
             SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-            SERVICE_ACCOUNT_FILE = self.keys
+            SERVICE_ACCOUNT_INFO = self.account_info
             creds = None
-            creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+            creds = service_account.Credentials.from_service_account_info(SERVICE_ACCOUNT_INFO, scopes=SCOPES)
 
             #Sheet Manipulation
             SPREADSHEET_ID = self.spreadsheetId

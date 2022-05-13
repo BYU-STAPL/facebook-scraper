@@ -1,5 +1,7 @@
 from getpass import getpass, getuser
 import sys
+import os
+import json
 
 # This file shows an example of how the system can be used.
 # I think this should provide lots of flexibility for 
@@ -25,15 +27,15 @@ scraper = Scraper(username, password)
 
 # Set the backend with the name of the keys file and spreadsheet ID
 def createGoogleSheetsBackend():
-    keyName = 'scraper/keys.json'
+    account_info = json.loads(os.environ.get("KEYS_JSON"))
     spreadsheetID = '1GtLupC4bNrhngFSY3ToihvZxmMTwobMl6GF-9KwjjRY'
-    backend = SheetsBackend(keyName, spreadsheetID)
+    backend = SheetsBackend(account_info, spreadsheetID)
     # attach the sheets to this backend
     from userprofilesheet import UserProfileSheet
     from frsheet import FRSheet
     from fakeDataFRSheet import FakeDataFRSheet
-    backend.add_sheet(UserProfileSheet(keyName, spreadsheetID))
-    backend.add_sheet(FRSheet(keyName, spreadsheetID))
+    backend.add_sheet(UserProfileSheet(account_info, spreadsheetID))
+    backend.add_sheet(FRSheet(account_info, spreadsheetID))
     return backend
 
 # attach the backend to the scraper
