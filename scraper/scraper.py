@@ -2,6 +2,8 @@ from userdto import UserDTO
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.utils import ChromeType
+
 import time
 
 class Scraper():
@@ -20,7 +22,7 @@ class Scraper():
         option.headless = True
         assert option.headless == True
         option.add_argument('--disable-notifications')
-        browser = webdriver.Chrome(ChromeDriverManager().install(), options=option)
+        browser = webdriver.Chrome(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install(), options=option)
 
         browser.get('https://www.facebook.com/')
          
