@@ -1,4 +1,0 @@
-# Aptfile
-# Add packages you want apt-get to install
-update
-chromium-chromedriver
