@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node .",
     "py:install": "cd scraper && pip install -r requirements.txt",
-    "dev": "nodemon server.js",
-    "heroku-postbuild": "npm run build"
+    "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
