@@ -1,7 +1,0 @@
-# Aptfile
-# Add packages you want apt-get to install
-libglib2.0-0
-libnss3
-libgconf-2-4
-libfontconfig1
-chromium-chromedriver
