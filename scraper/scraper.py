@@ -1,9 +1,8 @@
 from userdto import UserDTO
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
-import time
+import os
 
 class Scraper():
 
@@ -17,11 +16,13 @@ class Scraper():
         password = self.user_dto.password
         
         # disabling notification popups
-        option = Options()
-        option.headless = True
-        assert option.headless == True
-        option.add_argument('--disable-notifications')
-        browser = webdriver.Chrome(ChromeDriverManager().install(), options=option)
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument('--disable-notifications')
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
 
         browser.get('https://www.facebook.com/')
          
