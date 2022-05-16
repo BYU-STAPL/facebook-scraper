@@ -4,8 +4,8 @@ from frsheet import FRSheet
 from fakeDataFRSheet import FakeDataFRSheet
 
 class SheetsBackend(IBackend):
-    def __init__(self, keysName, spreadsheetId, sheets=[]):
-        self.keys = keysName
+    def __init__(self, account_info, spreadsheetId, sheets=[]):
+        self.account_info = account_info
         self.spreadsheetId = spreadsheetId
         self.sheets = sheets
     
